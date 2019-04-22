@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-from .model_utils import split, merge, injective_pad, psi
+from models.model_utils import split, merge, injective_pad, psi
 
 
 class irevnet_block(nn.Module):
@@ -152,8 +152,11 @@ class iRevNet(nn.Module):
 
 if __name__ == '__main__':
     model = iRevNet(nBlocks=[6, 16, 72, 6], nStrides=[2, 2, 2, 2],
-                    nChannels=None, nClasses=1000, init_ds=2,
+                    nChannels=[24, 96, 384, 1536], nClasses=1000, init_ds=2,
                     dropout_rate=0., affineBN=True, in_shape=[3, 224, 224],
                     mult=4)
     y = model(Variable(torch.randn(1, 3, 224, 224)))
-    print(y.size())
+    print(y[0].shape)
+    print(y[1].shape)
+    y_inv = model.inverse(y[1])
+    print(y_inv.shape)
